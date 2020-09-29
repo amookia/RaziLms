@@ -38,3 +38,25 @@ func FetchCourses(token string) map[string]string{
 	}
 	return m
 }
+
+
+func CourseDetail(url string,token string){
+	req,_ := http.NewRequest("GET",url,nil)
+	cookie := http.Cookie{Name: ".ASPXAUTH", Value: token}
+	req.AddCookie(&cookie)
+	client := &http.Client{Timeout: time.Second * 10}
+	resp,err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}else{
+		HtmlResp := resp
+		doc,_ := goquery.NewDocumentFromReader(HtmlResp.Body)
+		doc.Find("div.grid-parent").Find("[class=\"cell cellb meetingdetial\"]").Find("span").Each(func(i int, s *goquery.Selection){
+			abc := s.Text()
+			abc = strings.Replace(abc,":","",1)
+			fmt.Println(abc)
+		})
+
+	}
+
+}
