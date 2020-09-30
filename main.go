@@ -3,6 +3,8 @@ package main
 import (
 	"Project/lms"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -21,12 +23,23 @@ func main() {
 `
 	fmt.Println(asciiArt)
 
-	var username,password string
+	var username,password,token string
 	var selectarr int
 
-	fmt.Printf("Enter Username : ");fmt.Scanln(&username)
-	fmt.Printf("Enter Password : ");fmt.Scanln(&password)
-	token := lms.LoginLms(username,password)
+	fmt.Println("# Looking for token.ini file...\n")
+	_,exists := os.Stat("token.ini")
+	if os.IsNotExist(exists){
+		fmt.Println("# token.ini not found!")
+		fmt.Printf("Enter Username : ");fmt.Scanln(&username)
+		fmt.Printf("Enter Password : ");fmt.Scanln(&password)
+		token = lms.LoginLms(username,password)
+		os.Create("token.ini")
+		ioutil.WriteFile("token.ini",[]byte(token),0644)
+	}else {
+		fmt.Println("# token.ini found!\n\n")
+		readtoken,_ := ioutil.ReadFile("token.ini")
+		token = string(readtoken)
+	}
 	courses := lms.FetchCourses(token)
 	count := 0
 	for name,link := range courses {
