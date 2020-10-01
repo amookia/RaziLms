@@ -4,7 +4,7 @@ import (
 	"Project/lms"
 	"fmt"
 	"io/ioutil"
-	"os"
+	os "os"
 	"strconv"
 	"strings"
 )
@@ -36,9 +36,15 @@ func main() {
 		os.Create("token.ini")
 		ioutil.WriteFile("token.ini",[]byte(token),0644)
 	}else {
-		fmt.Println("# token.ini found!\n\n")
 		readtoken,_ := ioutil.ReadFile("token.ini")
 		token = string(readtoken)
+		if len(token) == 0 {
+			fmt.Println("# token.ini file is empty\n")
+			os.Remove("token.ini")
+			fmt.Println("token.ini file deleted\n")
+		}else{
+			fmt.Println("# token.ini found!\n\n")
+		}
 	}
 	courses = lms.FetchCourses(token)
 	count := 0
