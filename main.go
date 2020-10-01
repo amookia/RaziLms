@@ -22,10 +22,10 @@ func main() {
 
 `
 	fmt.Println(asciiArt)
-
+	var courses = map[string]string{}
 	var username,password,token string
 	var selectarr int
-
+	var courselist []string
 	fmt.Println("# Looking for token.ini file...\n")
 	_,exists := os.Stat("token.ini")
 	if os.IsNotExist(exists){
@@ -40,24 +40,20 @@ func main() {
 		readtoken,_ := ioutil.ReadFile("token.ini")
 		token = string(readtoken)
 	}
-	courses := lms.FetchCourses(token)
+	courses = lms.FetchCourses(token)
 	count := 0
 	for name,link := range courses {
 		count = count + 1
+		//fmt.Printf("(%v) Link : %v\nName : %v\n\n",strconv.Itoa(count),link,name)
+		link += "STRING_VAL"
+		link = strings.Replace(link,"/Lesson/","/VirtualAdmin/",1)
+		laststring := strings.Split(link,"/")
+		removestr := "/" + laststring[len(laststring) - 1]
+		link = strings.Replace(link,removestr,"",1)
 		fmt.Printf("(%v) Link : %v\nName : %v\n\n",strconv.Itoa(count),link,name)
+		courselist = append(courselist,link)
 	}
-	count = 0
-	fmt.Printf("Select : ");fmt.Scanln(&selectarr)
-	for _,l := range courses {
-		count = count + 1
-		if count == selectarr - 1 {
-			l += "sisdkisdksidk85"
-			l = strings.Replace(l,"/Lesson/","/VirtualAdmin/",1)
-			laststring := strings.Split(l,"/")
-			removestr := "/" + laststring[len(laststring) - 1]
-			l = strings.Replace(l,removestr,"",1)
-			lms.CourseDetail(l,token)
-		}
 
-	}
+	fmt.Printf("Select : ");fmt.Scanln(&selectarr)
+	lms.CourseDetail(courselist[selectarr - 1],token)
 }

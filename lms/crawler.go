@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -18,6 +19,7 @@ func FetchCourses(token string) map[string]string{
 	resp,err := client.Do(req)
 	if err != nil{
 		fmt.Println(err)
+		os.Exit(1)
 	}else {
 		HtmlResp := resp
 		doc,_ := goquery.NewDocumentFromReader(HtmlResp.Body)
