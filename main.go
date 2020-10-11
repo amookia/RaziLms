@@ -7,6 +7,7 @@ import (
 	os "os"
 	"strconv"
 	"strings"
+	"github.com/fatih/color"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
    \|__|     \/__/     \/__/     \/__/     \/__/     \/__/     \/__/  
 
 `
-	fmt.Println(asciiArt)
+	color.Red(asciiArt)
 	var courses = map[string]string{}
 	var username,password,token string
 	var selectarr int
@@ -29,12 +30,12 @@ func main() {
 	fmt.Println("# Looking for token.ini file...\n")
 	_,exists := os.Stat("token.ini")
 	if os.IsNotExist(exists){
-		fmt.Println("# token.ini not found!")
+		color.Red("# token.ini not found!")
 		fmt.Printf("Enter Username : ");fmt.Scanln(&username)
 		fmt.Printf("Enter Password : ");fmt.Scanln(&password)
 		token = lms.LoginLms(username,password)
-		os.Create("token.ini")
-		ioutil.WriteFile("token.ini",[]byte(token),0644)
+		_, _ = os.Create("token.ini")
+		_ = ioutil.WriteFile("token.ini", []byte(token), 0644)
 	}else {
 		readtoken,_ := ioutil.ReadFile("token.ini")
 		token = string(readtoken)
@@ -43,7 +44,7 @@ func main() {
 			os.Remove("token.ini")
 			fmt.Println("token.ini file deleted\n")
 		}else{
-			fmt.Println("# token.ini found!\n\n")
+			color.Green("# token.ini found!\n\n")
 		}
 	}
 	courses = lms.FetchCourses(token)
@@ -60,6 +61,10 @@ func main() {
 		courselist = append(courselist,link)
 	}
 
-	fmt.Printf("Select : ");fmt.Scanln(&selectarr)
-	lms.CourseDetail(courselist[selectarr - 1],token)
+	color.Green("~ Select : ");fmt.Scanln(&selectarr)
+	if courselist != nil {
+		lms.CourseDetail(courselist[selectarr - 1],token)
+	}else {
+		fmt.Println("Error")
+	}
 }
